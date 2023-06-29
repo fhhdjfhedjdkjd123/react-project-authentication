@@ -1,4 +1,5 @@
 import { useState, useRef,useContext } from 'react';
+import { useHistory } from 'react-router-dom' ;
 
 import classes from './AuthForm.module.css';
 import AuthContex from '../../store/auth-context';
@@ -6,6 +7,7 @@ import AuthContex from '../../store/auth-context';
 const AuthForm = () => {
   const emailInputRef=useRef();
   const passwordInputRef=useRef();
+  const history=useHistory();
 
   const ctx=useContext(AuthContex);
 
@@ -23,11 +25,14 @@ const AuthForm = () => {
     const enteredPassword = passwordInputRef.current.value;
 
     setIsLoading(true);
+    let url;
     if(isLogin){
-
-    }else{
-      fetch(
-        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAED3iaWsTVaHRCASaO8nYIbXrwkIkPOp8',
+      url='https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAED3iaWsTVaHRCASaO8nYIbXrwkIkPOp8';
+    }else
+    {
+      url='https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAED3iaWsTVaHRCASaO8nYIbXrwkIkPOp8';
+    }
+    fetch(url,
       {
         method:'POST',
         body:JSON.stringify({
@@ -37,17 +42,17 @@ const AuthForm = () => {
         }),
         headers:{
           'Content-Type':'application/json'
-        }
+        },
       }
       ).then(res=>{
         setIsLoading(false);
         if(res.ok){
-          // ...
+          return res.json();
         }else{
           return res.json().then(data=>{
             // error
             let errorMsg = "Authentication failed";
-            // if(data&&data.error&&data.error.message){
+                        // if(data&&data.error&&data.error.message){
             //   errorMsg=data.error.message;
             // }
             throw new Error(errorMsg);
@@ -58,12 +63,14 @@ const AuthForm = () => {
       })
       .then((data)=>{
         ctx.login(data.idToken);
-        //console.log(data);
+        history.replace('/');
+        console.log(data);
       })
       .catch((err)=>{
         alert(err.message);
       });
-    }
+
+
   }
   return (
     <section className={classes.auth}>
