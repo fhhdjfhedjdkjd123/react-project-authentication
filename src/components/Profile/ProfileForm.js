@@ -5,13 +5,13 @@ import {useHistory} from 'react-router-dom';
 import classes from './ProfileForm.module.css';
 
 const ProfileForm = () => {
-  const history=useHistory;
+  const history=useHistory();
   const newPassInputRef=useRef();
   const ctx=useContext(AuthContex);
 
   const submitHandler=(event)=>{
     event.preventDefault();
-    const enteredNewPassword=newPassInputRef.current.value();
+    const enteredNewPassword=newPassInputRef.current.value;
 
     fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyAED3iaWsTVaHRCASaO8nYIbXrwkIkPOp8',{
       method:'POST',
